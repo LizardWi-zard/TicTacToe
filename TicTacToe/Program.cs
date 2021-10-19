@@ -6,14 +6,27 @@ namespace TicTacToe
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Size size = new Size(3,3);
+
+            Playground playground = new Playground(size);
+
+            Render gameBoard = new Render();
+
+            gameBoard.ClearPoints(playground);
+            gameBoard.RenderPlayground(playground);
         }
     }
 
-    class Size
+    public class Size
     {
-        public int Width { get; }
-        public int Height { get; }
+        public Size(int width, int height)
+        {
+            Width = width;
+            Height = height;
+        }
+
+        public int Width { set; get; }
+        public int Height { set; get; }
     }
 
     class Point
@@ -24,9 +37,9 @@ namespace TicTacToe
 
     class Playground
     {
-        public char[,] PointPosition { get; }
-
-        public Playground(Size size) { }
+        public Playground(Size size) { Size = size; PointPosition = new char[size.Width, size.Height]; }
+       
+        public char[ , ] PointPosition { get; }
 
         public Size Size { get; }
 
@@ -35,16 +48,28 @@ namespace TicTacToe
 
     class Render
     {
-        public void Clear() => Console.Clear();
-        
-        public void RenderPlayground(Playground playground)
+
+        public void ClearPoints(Playground pl)
         {
-            Clear();
-            Console.WriteLine($"|{playground.PointPosition[0, 0]}|{playground.PointPosition[0, 1]}|{playground.PointPosition[0, 2]}|");
-            Console.WriteLine($"|{playground.PointPosition[1, 0]}|{playground.PointPosition[1, 1]}|{playground.PointPosition[1, 2]}|");
-            Console.WriteLine($"|{playground.PointPosition[2, 0]}|{playground.PointPosition[2, 1]}|{playground.PointPosition[2, 2]}|");
+            for(int w = 0; w < pl.Size.Width; w++)
+            {
+                for (int h = 0; h < pl.Size.Height; h++)
+                {
+                    pl.PointPosition[w, h] = '_'; 
+                }
+            }
         }
-    
+
+        
+        public void RenderPlayground(Playground pl)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"|{pl.PointPosition[0, 0]}|{pl.PointPosition[0, 1]}|{pl.PointPosition[0, 2]}|");
+            Console.WriteLine($"|{pl.PointPosition[1, 0]}|{pl.PointPosition[1, 1]}|{pl.PointPosition[1, 2]}|");
+            Console.WriteLine($"|{pl.PointPosition[2, 0]}|{pl.PointPosition[2, 1]}|{pl.PointPosition[2, 2]}|");
+        }
+
         public void RenderMessage(string message)
         {
             Console.WriteLine(message);
