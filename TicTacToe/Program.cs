@@ -10,10 +10,15 @@ namespace TicTacToe
 
             Playground playground = new Playground(size);
 
-            Render gameBoard = new Render();
+            Render render = new Render();
 
-            gameBoard.ClearPoints(playground);
-            gameBoard.RenderPlayground(playground);
+            Game game = new Game(render);
+
+            game.StartGame();
+
+
+            //render.ClearPoints(playground);
+            //render.RenderPlayground(playground);
         }
     }
 
@@ -25,8 +30,8 @@ namespace TicTacToe
             Height = height;
         }
 
-        public int Width { set; get; }
-        public int Height { set; get; }
+        public int Width { get; }
+        public int Height { get; }
     }
 
     class Point
@@ -43,22 +48,13 @@ namespace TicTacToe
 
         public Size Size { get; }
 
-        //public Cell this[Point point] => { ;}
+        //public Cell this[Point point] { get; }
     }
 
     class Render
     {
 
-        public void ClearPoints(Playground pl)
-        {
-            for(int w = 0; w < pl.Size.Width; w++)
-            {
-                for (int h = 0; h < pl.Size.Height; h++)
-                {
-                    pl.PointPosition[w, h] = '_'; 
-                }
-            }
-        }
+        public void Clear() => Console.Clear();
 
         
         public void RenderPlayground(Playground pl)
@@ -78,6 +74,83 @@ namespace TicTacToe
 
     class Game
     {
-        
+        public Game(Render render)
+        {
+            this.render = render;
+        }
+        Render render;
+        public Point point = new Point();
+
+        public bool playingGame = false;
+        public bool hasWinner = false;
+        public int gameMoves = 0;
+        public char side = ' ';
+
+        public void StartGame()
+        {
+            playingGame = true;
+            side = SideDesider();
+            render.RenderMessage($"Your side is \"{side}\"");
+        }
+
+        public void GameMove()
+        {
+            while(playingGame == true && gameMoves < 9)
+            {
+                AcceptMove();
+                CreateMove();
+            }
+        }
+
+
+        public void CreateMove()
+        {
+
+        }
+
+        public char SideDesider()
+        {
+            render.RenderMessage("Choose side");
+            render.RenderMessage("1 => X \t 2 => O");
+            render.RenderMessage("auto choose => X");
+            char holder = (char)Console.ReadKey().Key;
+
+            render.Clear();
+            
+            if (holder == '1' || holder != '2')
+                return 'X';
+            else 
+                return 'O';
+        }
+
+        public void CheckForWin()
+        {
+
+        }
+
+        public void ClearPoints(Playground pl)
+        {
+            for (int w = 0; w < pl.Size.Width; w++)
+            {
+                for (int h = 0; h < pl.Size.Height; h++)
+                {
+                    pl.PointPosition[w, h] = '_';
+                }
+            }
+        }
+        public void AcceptMove()
+        {
+            switch (Console.ReadKey().KeyChar)
+            {
+                case '1':
+                    
+                    break;
+
+
+
+                case '\0':
+                    break;
+            }
+        }
     }
 }
