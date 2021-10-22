@@ -36,19 +36,48 @@ namespace TicTacToe
 
     class Point
     {
+        public Point(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+
         public int X { get; }
         public int Y { get; }
     }
 
     class Playground
     {
-        public Playground(Size size) { Size = size; PointPosition = new char[size.Width, size.Height]; }
+        public Playground(Size size) 
+        { 
+            Size = size;
+            PointPosition = new Cell[size.Width , size.Height];
+        }
        
-        public char[ , ] PointPosition { get; }
+        Cell[ , ] PointPosition { get; }
+
+        public Cell this[Point point] 
+        { 
+            get 
+            {
+                return PointPosition[point.X, point.Y];
+            } 
+        }
+
+        public Cell this[int x, int y]
+        {
+            get
+            {
+                return PointPosition[x, y];
+            }
+        }
 
         public Size Size { get; }
+    }
 
-        //public Cell this[Point point] { get; }
+    class Cell
+    {
+        public char State { get; set; } //TODO: исправисть с Char на нормальный тип
     }
 
     class Render
@@ -61,9 +90,9 @@ namespace TicTacToe
         {
             Console.Clear();
 
-            Console.WriteLine($"|{pl.PointPosition[0, 0]}|{pl.PointPosition[0, 1]}|{pl.PointPosition[0, 2]}|");
-            Console.WriteLine($"|{pl.PointPosition[1, 0]}|{pl.PointPosition[1, 1]}|{pl.PointPosition[1, 2]}|");
-            Console.WriteLine($"|{pl.PointPosition[2, 0]}|{pl.PointPosition[2, 1]}|{pl.PointPosition[2, 2]}|");
+            Console.WriteLine($"|{pl[0, 0]}|{pl[0, 1]}|{pl[0, 2]}|");
+            Console.WriteLine($"|{pl[1, 0]}|{pl[1, 1]}|{pl[1, 2]}|");
+            Console.WriteLine($"|{pl[2, 0]}|{pl[2, 1]}|{pl[2, 2]}|");
         }
 
         public void RenderMessage(string message)
@@ -79,7 +108,7 @@ namespace TicTacToe
             this.render = render;
         }
         Render render;
-        public Point point = new Point();
+        //public Point point = new Point();
 
         public bool playingGame = false;
         public bool hasWinner = false;
@@ -134,7 +163,7 @@ namespace TicTacToe
             {
                 for (int h = 0; h < pl.Size.Height; h++)
                 {
-                    pl.PointPosition[w, h] = '_';
+                    pl[w, h].State = '_';
                 }
             }
         }
