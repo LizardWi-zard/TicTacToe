@@ -16,7 +16,7 @@ namespace TicTacToe
         Playground pl;
         //public Point point = new Point();
 
-        List<char> emptySpase = new List<char>() { '1', '2', '3', '4', '5', '6', '7', '8', '9', };
+        List<char> emptySpase = new List<char>() { '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
         public bool playingGame = false;
         public bool hasWinner = false;
@@ -38,21 +38,24 @@ namespace TicTacToe
         {
             Thread.Sleep(1000);
             render.RenderPlayground();
-            while (playingGame == true && gameMoves < 9)
+            while (playingGame == true && gameMoves <= 8)
             {
                 if (botTurn)
                 {
                     CreateMove();
-                    AcceptMove();
+                    CheckForWin(botSide);
                 }
                 else
                 {
                     AcceptMove();
-                    CreateMove();
+                    CheckForWin(playerSide);
+                    
                 }
 
-                CheckForWin();
+                botTurn = !botTurn;
                 gameMoves++;
+                
+                Thread.Sleep(500);
             }
         }
 
@@ -94,7 +97,7 @@ namespace TicTacToe
 
             while (turnNotFound)
             {
-                string pos =  (random.Next(1, 9)).ToString();
+                string pos = random.Next(1, 9).ToString();
                 
                 int x = GetPosition(pos[0]).Item1;
                 int y = GetPosition(pos[0]).Item2;
@@ -103,7 +106,8 @@ namespace TicTacToe
                 {
                     pl[x, y].State = botSide;
                     turnNotFound = false;
-                    //emptySpase[pos] = 'X';
+                    emptySpase[int.Parse(pos)-1] = '-'; 
+                    //TODO: Сделать список доступный ходов
                 }
             }
             render.RenderPlayground();
@@ -112,14 +116,38 @@ namespace TicTacToe
         public void AcceptMove()
         {
             render.RenderEmptySpace(emptySpase);
-            char hodler = Console.ReadKey().KeyChar;
-            int x = GetPosition(hodler).Item1;
-            int y = GetPosition(hodler).Item2;
+            bool avalibleMove = false;
+            string holder = "";
+
+            while(!avalibleMove)
+            {
+                holder = Console.ReadKey().KeyChar.ToString();
+                avalibleMove = IsAvalibleMove(holder[0]);
+            }
+
+            emptySpase[int.Parse(holder) - 1] = '-';
+            int x = GetPosition(holder[0]).Item1;
+            int y = GetPosition(holder[0]).Item2;
 
             pl[x, y].State = playerSide;
-            
             render.Clear();
             render.RenderPlayground();
+        }
+
+        public bool IsAvalibleMove(char input) 
+        {
+            foreach(var item in emptySpase)
+            {
+                if(input == item)
+                {
+                    return true;
+                }
+            }
+            render.Clear();
+            render.RenderPlayground();
+            render.RenderMessage("Invalid input");
+            render.RenderEmptySpace(emptySpase);
+            return false;
         }
 
         public Tuple<int, int> GetPosition(char a)
@@ -150,38 +178,24 @@ namespace TicTacToe
             }
         }
 
-        public void UpdateList()
-        {
-
-        }
-
-        public void CheckForWin()
+        public void CheckForWin(char side)
         {
             if (
-                (pl[0, 0].State == 'X') && (pl[1, 0].State == 'X') && (pl[2, 0].State == 'X') ||
-                (pl[0, 1].State == 'X') && (pl[1, 1].State == 'X') && (pl[2, 1].State == 'X') ||
-                (pl[0, 2].State == 'X') && (pl[1, 2].State == 'X') && (pl[2, 2].State == 'X') ||
-                (pl[0, 0].State == 'X') && (pl[0, 1].State == 'X') && (pl[0, 2].State == 'X') ||
-                (pl[1, 0].State == 'X') && (pl[1, 1].State == 'X') && (pl[1, 2].State == 'X') ||
-                (pl[2, 0].State == 'X') && (pl[2, 1].State == 'X') && (pl[2, 2].State == 'X') ||
-                (pl[0, 0].State == 'X') && (pl[1, 1].State == 'X') && (pl[2, 2].State == 'X') ||
-                (pl[0, 2].State == 'X') && (pl[1, 1].State == 'X') && (pl[2, 0].State == 'X'))
+                (pl[0, 0].State == side) && (pl[1, 0].State == side) && (pl[2, 0].State == side) ||
+                (pl[0, 1].State == side) && (pl[1, 1].State == side) && (pl[2, 1].State == side) ||
+                (pl[0, 2].State == side) && (pl[1, 2].State == side) && (pl[2, 2].State == side) ||
+                (pl[0, 0].State == side) && (pl[0, 1].State == side) && (pl[0, 2].State == side) ||
+                (pl[1, 0].State == side) && (pl[1, 1].State == side) && (pl[1, 2].State == side) ||
+                (pl[2, 0].State == side) && (pl[2, 1].State == side) && (pl[2, 2].State == side) ||
+                (pl[0, 0].State == side) && (pl[1, 1].State == side) && (pl[2, 2].State == side) ||
+                (pl[0, 2].State == side) && (pl[1, 1].State == side) && (pl[2, 0].State == side)) 
             {
-                render.RenderMessage($"The winner is X");
+                render.RenderMessage($"The winner is {side}!");
                 playingGame = false;
-            }
-
-            else if (
-                 (pl[0, 0].State == 'O') && (pl[1, 0].State == 'O') && (pl[2, 0].State == 'O') ||
-                 (pl[0, 1].State == 'O') && (pl[1, 1].State == 'O') && (pl[2, 1].State == 'O') ||
-                 (pl[0, 2].State == 'O') && (pl[1, 2].State == 'O') && (pl[2, 2].State == 'O') ||
-                 (pl[0, 0].State == 'O') && (pl[0, 1].State == 'O') && (pl[0, 2].State == 'O') ||
-                 (pl[1, 0].State == 'O') && (pl[1, 1].State == 'O') && (pl[1, 2].State == 'O') ||
-                 (pl[2, 0].State == 'O') && (pl[2, 1].State == 'O') && (pl[2, 2].State == 'O') ||
-                 (pl[0, 0].State == 'O') && (pl[1, 1].State == 'O') && (pl[2, 2].State == 'O') ||
-                 (pl[0, 2].State == 'O') && (pl[1, 1].State == 'O') && (pl[2, 0].State == 'O'))
+            } 
+            else if (gameMoves >= 8)
             {
-                render.RenderMessage($"The winner is O");
+                render.RenderMessage("Draw!");
                 playingGame = false;
             }
         }
