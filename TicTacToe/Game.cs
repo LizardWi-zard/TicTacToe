@@ -5,15 +5,24 @@ using System.Threading;
 
 namespace TicTacToe
 {
+    public enum StateEnum
+    {
+        _ = 1,
+        X,
+        O
+    }
+
     class Game
     {
         Render render;
         Playground playground;
+
         public Game(Render render, Playground pl)
         {
             this.render = render;
             playground = pl;
         }
+
 
         List<char> emptySpase = new List<char>() { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
@@ -25,11 +34,11 @@ namespace TicTacToe
         };
 
         bool playingGame = false;
-        bool hasWinner = false;
         bool botTurn = false;
         int gameMoves = 0;
-        char playerSide = ' ';
-        char botSide = 'O';
+
+        StateEnum playerSide = StateEnum._;
+        StateEnum botSide = StateEnum.O;
 
         public void StartGame()
         {
@@ -64,7 +73,7 @@ namespace TicTacToe
             }
         }
 
-        char SideDesider()
+        StateEnum SideDesider()
         {
             render.RenderMessage("Choose side");
             render.RenderMessage("1 => X \t 2 => O");
@@ -74,11 +83,11 @@ namespace TicTacToe
             render.Clear();
 
             if (holder == '1' || holder != '2')
-                return 'X';
+                return StateEnum.X;
 
-            botSide = 'X';
+            botSide = StateEnum.X;
             botTurn = true;
-            return 'O';
+            return StateEnum.O;
         }
 
         void ClearPoints()
@@ -86,7 +95,7 @@ namespace TicTacToe
             for (int w = 0; w < playground.Size.Width; w++)
             {
                 for (int h = 0; h < playground.Size.Height; h++)
-                    playground[w, h] = new Cell { State = '_' };
+                    playground[w, h] = new Cell { State = StateEnum._ };
                 
             }
         }
@@ -104,7 +113,7 @@ namespace TicTacToe
                 int row = coordinatsMap[int.Parse(pos)].Row;
                 int column = coordinatsMap[int.Parse(pos)].Сolumn;
 
-                if (playground[row, column].State == '_')
+                if (playground[row, column].State == StateEnum._)
                 {
                     playground[row, column].State = botSide;
                     turnNotFound = false;
@@ -152,7 +161,7 @@ namespace TicTacToe
             return false;
         }
 
-        void CheckForWin(char side)
+        void CheckForWin(StateEnum side)
         {
             if (
                 (playground[0, 0].State == side) && (playground[1, 0].State == side) && (playground[2, 0].State == side) ||
