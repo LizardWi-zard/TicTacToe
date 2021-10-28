@@ -6,6 +6,6 @@ namespace TicTacToe
 {
     class Cell
     {
-        public char State { get; set; } //TODO: исправисть с Char на нормальный тип
+        public char State { get; set; } //TODO: исправисть с Char на нормальный тип (Перечисление)
     }
 }

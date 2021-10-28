@@ -8,9 +8,9 @@ namespace TicTacToe
     {
         public Render(Playground pl)
         {
-            this.pl = pl;
+            playground = pl;
         }
-        Playground pl;
+        Playground playground;
         public void Clear() => Console.Clear();
 
 
@@ -18,9 +18,9 @@ namespace TicTacToe
         {
             Console.Clear();
 
-            Console.WriteLine($"| {pl[0, 0].State} | {pl[0, 1].State} | {pl[0, 2].State} |");
-            Console.WriteLine($"| {pl[1, 0].State} | {pl[1, 1].State} | {pl[1, 2].State} |");
-            Console.WriteLine($"| {pl[2, 0].State} | {pl[2, 1].State} | {pl[2, 2].State} |");
+            Console.WriteLine($"| {playground[0, 0].State} | {playground[0, 1].State} | {playground[0, 2].State} |");
+            Console.WriteLine($"| {playground[1, 0].State} | {playground[1, 1].State} | {playground[1, 2].State} |");
+            Console.WriteLine($"| {playground[2, 0].State} | {playground[2, 1].State} | {playground[2, 2].State} |");
         }
 
         public void RenderEmptySpace(List<char> empty)

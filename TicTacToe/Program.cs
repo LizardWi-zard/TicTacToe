@@ -17,9 +17,7 @@ namespace TicTacToe
 
             game.StartGame();
 
-
-            //render.ClearPoints(playground);
-            //render.RenderPlayground(playground);
+            Console.ReadKey();
         }
     }
 }

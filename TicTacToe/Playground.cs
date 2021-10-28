@@ -18,20 +18,20 @@ namespace TicTacToe
 
         public Cell this[Point point]
         {
-            get => PointPosition[point.X, point.Y];
+            get => PointPosition[point.Row, point.Сolumn];
             set
             {
-                PointPosition[point.X, point.Y] = value;
+                PointPosition[point.Row, point.Сolumn] = value;
             }
         }
 
-        public Cell this[int x, int y]
+        public Cell this[int row, int сolumn]
         {
+            get => PointPosition[row, сolumn];
             set
             {
-                PointPosition[x, y] = value;
+                PointPosition[row, сolumn] = value;
             }
-            get => PointPosition[x, y];
         }
 
     }
