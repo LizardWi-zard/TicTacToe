@@ -6,13 +6,13 @@ namespace TicTacToe
 {
     class Point
     {
-        public Point(int x, int y)
+        public Point(int row, int сolumn)
         {
-            X = x;
-            Y = y;
+            Row = row;
+            Сolumn = сolumn;
         }
 
-        public int X { get; }
-        public int Y { get; }
+        public int Row { get; }
+        public int Сolumn { get; }
     }
 }
