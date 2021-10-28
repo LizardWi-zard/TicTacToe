@@ -7,23 +7,29 @@ namespace TicTacToe
 {
     class Game
     {
+        Render render;
+        Playground playground;
         public Game(Render render, Playground pl)
         {
             this.render = render;
-            this.pl = pl;
+            playground = pl;
         }
-        Render render;
-        Playground pl;
-        //public Point point = new Point();
 
-        List<char> emptySpase = new List<char>() { '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        List<char> emptySpase = new List<char>() { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        public bool playingGame = false;
-        public bool hasWinner = false;
-        public bool botTurn = false;
-        public int gameMoves = 0;
-        public char playerSide = ' ';
-        public char botSide = 'O';
+        Dictionary<int, Point> coordinatsMap = new Dictionary<int, Point>()
+        {
+            {1, new Point(0, 0) }, {2, new Point(0, 1) }, {3, new Point(0, 2) },
+            {4, new Point(1, 0) }, {5, new Point(1, 1) }, {6, new Point(1, 2) },
+            {7, new Point(2, 0) }, {8, new Point(2, 1) }, {9, new Point(2, 2) }
+        };
+
+        bool playingGame = false;
+        bool hasWinner = false;
+        bool botTurn = false;
+        int gameMoves = 0;
+        char playerSide = ' ';
+        char botSide = 'O';
 
         public void StartGame()
         {
@@ -34,7 +40,7 @@ namespace TicTacToe
             GameMove();
         }
 
-        public void GameMove()
+        void GameMove()
         {
             Thread.Sleep(1000);
             render.RenderPlayground();
@@ -49,17 +55,16 @@ namespace TicTacToe
                 {
                     AcceptMove();
                     CheckForWin(playerSide);
-                    
                 }
 
                 botTurn = !botTurn;
                 gameMoves++;
-                
+
                 Thread.Sleep(500);
             }
         }
 
-        public char SideDesider()
+        char SideDesider()
         {
             render.RenderMessage("Choose side");
             render.RenderMessage("1 => X \t 2 => O");
@@ -70,26 +75,23 @@ namespace TicTacToe
 
             if (holder == '1' || holder != '2')
                 return 'X';
-            else
-            {
-                botSide = 'X';
-                botTurn = true;
-                return 'O';
-            }
+
+            botSide = 'X';
+            botTurn = true;
+            return 'O';
         }
 
-        public void ClearPoints()
+        void ClearPoints()
         {
-            for (int w = 0; w < pl.Size.Width; w++)
+            for (int w = 0; w < playground.Size.Width; w++)
             {
-                for (int h = 0; h < pl.Size.Height; h++)
-                {
-                    pl[w, h] = new Cell{ State = '_' };
-                }
+                for (int h = 0; h < playground.Size.Height; h++)
+                    playground[w, h] = new Cell { State = '_' };
+                
             }
         }
 
-        public void CreateMove()
+        void CreateMove()
         {
             render.Clear();
             bool turnNotFound = true;
@@ -98,51 +100,51 @@ namespace TicTacToe
             while (turnNotFound)
             {
                 string pos = random.Next(1, 9).ToString();
-                
-                int x = GetPosition(pos[0]).Item1;
-                int y = GetPosition(pos[0]).Item2;
 
-                if (pl[x, y].State == '_')
+                int row = coordinatsMap[int.Parse(pos)].Row;
+                int column = coordinatsMap[int.Parse(pos)].Сolumn;
+
+                if (playground[row, column].State == '_')
                 {
-                    pl[x, y].State = botSide;
+                    playground[row, column].State = botSide;
                     turnNotFound = false;
-                    emptySpase[int.Parse(pos)-1] = '-'; 
-                    //TODO: Сделать список доступный ходов
+                    emptySpase[int.Parse(pos) - 1] = '-';
                 }
             }
             render.RenderPlayground();
         }
 
-        public void AcceptMove()
+        void AcceptMove()
         {
             render.RenderEmptySpace(emptySpase);
             bool avalibleMove = false;
             string holder = "";
 
-            while(!avalibleMove)
+            while (!avalibleMove)
             {
                 holder = Console.ReadKey().KeyChar.ToString();
                 avalibleMove = IsAvalibleMove(holder[0]);
             }
 
             emptySpase[int.Parse(holder) - 1] = '-';
-            int x = GetPosition(holder[0]).Item1;
-            int y = GetPosition(holder[0]).Item2;
 
-            pl[x, y].State = playerSide;
+            int row = coordinatsMap[int.Parse(holder)].Row;
+            int column = coordinatsMap[int.Parse(holder)].Сolumn;
+
+            playground[row, column].State = playerSide;
             render.Clear();
             render.RenderPlayground();
         }
 
-        public bool IsAvalibleMove(char input) 
+        bool IsAvalibleMove(char input)
         {
-            foreach(var item in emptySpase)
+            foreach (var item in emptySpase)
             {
-                if(input == item)
-                {
+                if (input == item)
                     return true;
-                }
+
             }
+
             render.Clear();
             render.RenderPlayground();
             render.RenderMessage("Invalid input");
@@ -150,45 +152,17 @@ namespace TicTacToe
             return false;
         }
 
-        public Tuple<int, int> GetPosition(char a)
-        {
-            switch (a)
-            {
-                case '1':
-                    return Tuple.Create(0, 0);
-                case '2':
-                    return Tuple.Create(0, 1);
-                case '3':
-                    return Tuple.Create(0, 2);
-                case '4':
-                    return Tuple.Create(1, 0);
-                case '5':
-                    return Tuple.Create(1, 1);
-                case '6':
-                    return Tuple.Create(1, 2);
-                case '7':
-                    return Tuple.Create(2, 0);
-                case '8':
-                    return Tuple.Create(2, 1);
-                case '9':
-                    return Tuple.Create(2, 2);
-
-                default:
-                    return Tuple.Create(0, 0);
-            }
-        }
-
-        public void CheckForWin(char side)
+        void CheckForWin(char side)
         {
             if (
-                (pl[0, 0].State == side) && (pl[1, 0].State == side) && (pl[2, 0].State == side) ||
-                (pl[0, 1].State == side) && (pl[1, 1].State == side) && (pl[2, 1].State == side) ||
-                (pl[0, 2].State == side) && (pl[1, 2].State == side) && (pl[2, 2].State == side) ||
-                (pl[0, 0].State == side) && (pl[0, 1].State == side) && (pl[0, 2].State == side) ||
-                (pl[1, 0].State == side) && (pl[1, 1].State == side) && (pl[1, 2].State == side) ||
-                (pl[2, 0].State == side) && (pl[2, 1].State == side) && (pl[2, 2].State == side) ||
-                (pl[0, 0].State == side) && (pl[1, 1].State == side) && (pl[2, 2].State == side) ||
-                (pl[0, 2].State == side) && (pl[1, 1].State == side) && (pl[2, 0].State == side)) 
+                (playground[0, 0].State == side) && (playground[1, 0].State == side) && (playground[2, 0].State == side) ||
+                (playground[0, 1].State == side) && (playground[1, 1].State == side) && (playground[2, 1].State == side) ||
+                (playground[0, 2].State == side) && (playground[1, 2].State == side) && (playground[2, 2].State == side) ||
+                (playground[0, 0].State == side) && (playground[0, 1].State == side) && (playground[0, 2].State == side) ||
+                (playground[1, 0].State == side) && (playground[1, 1].State == side) && (playground[1, 2].State == side) ||
+                (playground[2, 0].State == side) && (playground[2, 1].State == side) && (playground[2, 2].State == side) ||
+                (playground[0, 0].State == side) && (playground[1, 1].State == side) && (playground[2, 2].State == side) ||
+                (playground[0, 2].State == side) && (playground[1, 1].State == side) && (playground[2, 0].State == side)) 
             {
                 render.RenderMessage($"The winner is {side}!");
                 playingGame = false;
